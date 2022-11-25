@@ -16,4 +16,4 @@ class ProductSerializer(serializers.ModelSerializer):
         ordering = ('name',)
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
-        index_together = (('id', 'slug'), )
+        index_together = (('id', 'slug'),)
