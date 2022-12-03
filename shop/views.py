@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.viewsets import ModelViewSet
-from shop.models import Product
-from .filters import ProductFilter
-from .serializers import ProductSerializer
+from shop.models import Product, Order
+from .filters import ProductFilter, ReviewFilter, OrderFilter
+from .serializers import ProductSerializer, OrderSerializer
 
 
 class IsOwnerOrAdmin(permissions.BasePermission):
@@ -30,3 +30,18 @@ class ProductViewSet(ModelViewSet):
         return []
 
 
+class OrderViewSet(ModelViewSet):
+    """ViewSet для заказа"""
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    filterset_class = OrderFilter
+
+    def get_permissions(self):
+        """Получение прав для действий."""
+        if self.action in ["create"]:
+            return [IsAuthenticated()]
+        if self.action in ["list"]:
+            return [IsAdminUser()]
+        if self.action in ["retrieve", "update", "partial_update", "destroy"]:
+            return [IsOwnerOrAdmin()]
+        return []
