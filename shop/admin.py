@@ -1,16 +1,31 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Product, Order, Review, Item, ProductCollection
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
-    prepopulated_fields = {'slug': ('name',)}
+
+class ItemInline(admin.TabularInline):
+    model = Item
+    fields = ['product', 'quantity', 'price']
+    raw_id_fields = ['product']
+    readonly_fields = ['price']
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'price', 'available', 'created']
-    list_filter = ['available', 'created']
-    list_editable = ['price', 'available']
-    prepopulated_fields = {'slug': ('name', )}
+    pass
 
 
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['created_at', 'creator', 'total_items', 'status', 'total_price']
+    list_filter = ['created_at']
+    inlines = [ItemInline]
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ProductCollection)
+class ProductCollectionAdmin(admin.ModelAdmin):
+    pass

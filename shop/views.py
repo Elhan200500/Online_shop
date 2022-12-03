@@ -1,21 +1,32 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Category, Product
-from .serializers import CategorySerializer, ProductSerializer
+from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.viewsets import ModelViewSet
+from shop.models import Product
+from .filters import ProductFilter
+from .serializers import ProductSerializer
 
 
-def product_list(request, category_slug=None):
-    serializer_class = CategorySerializer, ProductSerializer
-    category = None
-    categories = Category.objects.all()
-    products = Product.objects.filter(available=True)
-    if category_slug:
-        category = get_object_or_404(Category, slug=category_slug)
-        products = products.filter(category=category)
-    return render(request, 'shop/product/list.html',
-                  {
-                      'category': category,
-                      'categories': categories,
-                      'products': products,
-                      'serializer_class': serializer_class
-                  })
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """Класс разрешений для владельца объекта"""
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        return obj.creator == request.user
+
+
+class ProductViewSet(ModelViewSet):
+    """ViewSet для товара."""
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filterset_class = ProductFilter
+
+    def get_permissions(self):
+        """Получение прав для действий."""
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return []
+
 

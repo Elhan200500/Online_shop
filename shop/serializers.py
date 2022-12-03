@@ -1,19 +1,22 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Product, Category
+
+from shop.models import Product
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class UseSerializer(serializers.ModelSerializer):
+    """Serializer для пользователя."""
+
     class Meta:
-        model = Category
-        ordering = ('name',)
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
+        model = User
+        fields = ('id', 'username',)
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """Serializer для товара."""
+
     class Meta:
         model = Product
-        ordering = ('name',)
-        verbose_name = 'Товар'
-        verbose_name_plural = 'Товары'
-        index_together = (('id', 'slug'),)
+        fields = ('id', 'name', 'description', 'price', 'created_at', 'updated_at',)
+
+
