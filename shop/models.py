@@ -93,3 +93,14 @@ class Review(models.Model):
     )
 
 
+class ProductCollection(models.Model):
+    """Подборки."""
+    headline = models.CharField(max_length=200)
+    text = models.TextField(default='')
+    items = models.ManyToManyField(Product)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
