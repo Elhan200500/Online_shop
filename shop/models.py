@@ -45,3 +45,25 @@ class Order(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+
+
+
+class Item(models.Model):
+    """Позиция."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='positions')
+    quantity = models.PositiveSmallIntegerField(default=0)
+    price = models.DecimalField(decimal_places=2, max_digits=10)
+
+    def __str__(self):
+        return self.product.name
+
+    def get_cost(self):
+        return self.price * self.quantity
+
+    def save(self, *args, **kwargs):
+        if self.price is None:
+            self.price = self.product.price
+        super(Item, self).save(*args, **kwargs)
+
+
