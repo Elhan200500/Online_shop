@@ -67,3 +67,29 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
 
+class Review(models.Model):
+    """Отзыв."""
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    RATING = [(ONE, 1), (TWO, 2), (THREE, 3), (FOUR, 4), (FIVE, 5), ]
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    text = models.TextField(default='')
+    rating = models.IntegerField(
+        choices=RATING,
+        default=FIVE
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+
