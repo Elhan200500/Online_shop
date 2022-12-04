@@ -47,7 +47,6 @@ class Order(models.Model):
     )
 
 
-
 class Item(models.Model):
     """Позиция."""
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from shop.models import Product, Order
+from shop.models import Product, Order, Item, Review, ProductCollection
 
 
 class UseSerializer(serializers.ModelSerializer):
@@ -57,4 +57,30 @@ class OrderSerializer(serializers.ModelSerializer):
             raw_positions.append(position)
         Item.objects.bulk_create(raw_positions)
         return order
+
+    def update(self, instance, validated_data):
+        """Метод для обновления"""
+        order = Order.objects.get(pk=instance.id)
+        if order.status != validated_data['status'] and not self.context["request"].user.is_staff:
+            raise serializers.ValidationError("Only admin can update status")
+        return super().update(instance, validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer для отзыва."""
+    creator = UseSerializer(read_only=True)
+    product_id = serializers.CharField(read_only=False)
+
+    class Meta:
+        model = Review
+        fields = ('id', 'creator', 'product_id', 'text', 'rating', 'created_at', 'updated_at',)
+
+    def create(self, validated_data):
+        """Метод для создания отзыва"""
+        user = self.context["request"].user
+        validated_data["creator"] = user
+        review = Review.objects.filter(creator=user)
+        if len(review) >= 1:
+            raise serializers.ValidationError("User alredy left review")
+        return super().create(validated_data)
 
