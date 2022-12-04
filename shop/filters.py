@@ -1,11 +1,12 @@
 from django_filters import rest_framework as filters
-from shop.models import Product, Order
+from shop.models import Product, Order, Review, OrderStatusChoices
+
 
 class ProductFilter(filters.FilterSet):
     """Фильтры для товаров."""
 
-    price_from= filters.NumberFilter(field_name='price', lookup_expr="gte")
-    price_to= filters.NumberFilter(field_name='price', lookup_expr="lte")
+    price_from = filters.NumberFilter(field_name='price', lookup_expr="gte")
+    price_to = filters.NumberFilter(field_name='price', lookup_expr="lte")
     name = filters.CharFilter(lookup_expr='icontains')
     description = filters.CharFilter(lookup_expr='icontains')
 
@@ -18,15 +19,16 @@ class OrderFilter(filters.FilterSet):
     """Фильтры для заказов."""
 
     status = filters.ChoiceFilter(choices=OrderStatusChoices.choices)
-    price_from= filters.NumberFilter(field_name='total_price', lookup_expr="gte")
-    price_to= filters.NumberFilter(field_name='total_price', lookup_expr="lte")
-    products =  filters.CharFilter()
+    price_from = filters.NumberFilter(field_name='total_price', lookup_expr="gte")
+    price_to = filters.NumberFilter(field_name='total_price', lookup_expr="lte")
+    products = filters.CharFilter()
     created_at = filters.DateFromToRangeFilter()
     updated_at = filters.DateFromToRangeFilter()
 
     class Meta:
         model = Order
         fields = ('status', 'price_from', 'price_to', 'products', 'created_at', 'updated_at',)
+
 
 class ReviewFilter(filters.FilterSet):
     """Фильтры для отзывов."""

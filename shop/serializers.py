@@ -84,3 +84,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User alredy left review")
         return super().create(validated_data)
 
+
+class ProductCollectionSerializer(serializers.ModelSerializer):
+    """Serializer для подборки."""
+
+    class Meta:
+        model = ProductCollection
+        fields = ('id', 'headline', 'text', 'items', 'created_at', 'updated_at',)
